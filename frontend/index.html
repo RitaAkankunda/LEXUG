@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LexUg — Your Ugandan Civic AI Companion</title>
+  <meta name="description" content="LexUg is your free Ugandan civic AI companion. Ask questions about Ugandan law, your rights, and the Constitution in plain simple English." />
+  <meta name="theme-color" content="#1f2937" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="LexUg" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== LANDING PAGE ===== -->
+  <div id="landing-page" class="page active">
+    <!-- Disclaimer Banner -->
+    <div class="disclaimer-banner" id="landing-disclaimer">
+      <span class="disclaimer-icon">⚠️</span>
+      <span>LexUg provides <strong>civic education only</strong> — not legal advice. For your specific situation, consult a qualified Ugandan lawyer.</span>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="landing-hero">
+      <div class="hero-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+      </div>
+      <div class="hero-content">
+        <div class="logo-lockup">
+          <div class="logo-mark">
+            <span class="logo-lex">Lex</span><span class="logo-ug">Ug</span>
+          </div>
+          <div class="logo-badge">🇺🇬 Uganda</div>
+        </div>
+        <h1 class="hero-title">Know Your Rights.<br/><span class="gradient-text">Speak Your Language.</span></h1>
+        <p class="hero-tagline">Uganda's first AI civic companion — ask anything about Ugandan law, your rights, and the Constitution. Get plain, clear answers in seconds.</p>
+        
+        <div class="hero-stats">
+          <div class="stat-pill">
+            <span class="stat-icon">📜</span>
+            <span>Constitution of Uganda 1995</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-icon">⚡</span>
+            <span>Instant Answers</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-icon">🆓</span>
+            <span>100% Free</span>
+          </div>
+        </div>
+
+        <button class="cta-button" id="start-asking-btn" onclick="showPage('chat-page')">
+          <span>Start Asking</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+        <button class="cta-secondary" onclick="showPage('explore-page')">
+          <span>📚 Browse by Topic</span>
+        </button>
+      </div>
+
+      <!-- Quick Topic Cards Preview -->
+      <div class="landing-cards">
+        <div class="cards-label">Popular questions</div>
+        <div class="quick-cards-grid" id="landing-quick-cards">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Strip -->
+    <div class="features-strip">
+      <div class="feature-item">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-text">
+          <strong>Claude AI Powered</strong>
+          <span>Accurate, nuanced answers about Ugandan law</span>
+        </div>
+      </div>
+      <div class="feature-divider"></div>
+      <div class="feature-item">
+        <div class="feature-icon">📱</div>
+        <div class="feature-text">
+          <strong>Mobile First</strong>
+          <span>Built for Uganda's phone-first users</span>
+        </div>
+      </div>
+      <div class="feature-divider"></div>
+      <div class="feature-item">
+        <div class="feature-icon">🗣️</div>
+        <div class="feature-text">
+          <strong>Luganda Support</strong>
+          <span>Get answers in English or Luganda</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation to Explore -->
+    <div class="landing-explore-teaser">
+      <h2>Explore Ugandan Law by Topic</h2>
+      <p>Not sure what to ask? Browse our legal topics</p>
+      <div class="explore-categories-preview" id="explore-preview">
+        <!-- Populated by JS -->
+      </div>
+      <button class="explore-all-btn" onclick="showPage('explore-page')">View All Topics →</button>
+    </div>
+
+    <footer class="landing-footer">
+      <div class="footer-logo">Lex<span>Ug</span></div>
+      <p>Built for every Ugandan. Powered by Claude AI.</p>
+      <p class="footer-disclaimer">This app provides civic education, not legal advice. Always consult a qualified Ugandan lawyer for your specific legal situation.</p>
+    </footer>
+  </div>
+
+  <!-- ===== CHAT PAGE ===== -->
+  <div id="chat-page" class="page">
+    <!-- Header -->
+    <header class="chat-header" id="chat-header">
+      <button class="back-btn" onclick="showPage('landing-page')" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 12-14 0"/><path d="m12 5-7 7 7 7"/></svg>
+      </button>
+      <div class="header-brand">
+        <div class="header-logo">Lex<span>Ug</span></div>
+        <div class="header-sub">Ugandan Civic AI</div>
+      </div>
+      <div class="header-actions">
+        <button class="lang-toggle" id="lang-toggle-btn" onclick="toggleLanguage()" title="Switch language">
+          <span id="lang-label">🇺🇬 EN</span>
+        </button>
+        <button class="new-chat-btn" onclick="clearChat()" title="New chat">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Disclaimer Banner (chat) -->
+    <div class="chat-disclaimer-bar">
+      <span>⚠️ Civic education only — not legal advice. Consult a qualified Ugandan lawyer for your situation.</span>
+      <span id="demo-indicator" class="demo-indicator" style="display: none;">🔓 Demo Mode</span>
+      <span id="online-status" class="online-status">🟢 Online</span>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="chat-window" id="chat-window">
+      <!-- Welcome state -->
+      <div class="chat-welcome" id="chat-welcome">
+        <div class="welcome-logo">Lex<span>Ug</span></div>
+        <p class="welcome-text">Oli otya! 👋 Ask me anything about Ugandan law, your rights, or how the government works.</p>
+        <div class="quick-cards-container">
+          <div class="quick-cards-label">Try asking:</div>
+          <div class="quick-cards-grid" id="chat-quick-cards">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages container -->
+      <div class="messages-list" id="messages-list"></div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <textarea
+          id="user-input"
+          class="chat-input"
+          placeholder="Ask about your rights..."
+          rows="1"
+          onkeydown="handleKeyDown(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send message">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">Press Enter to send · Shift+Enter for new line</div>
+    </div>
+  </div>
+
+  <!-- ===== EXPLORE PAGE ===== -->
+  <div id="explore-page" class="page">
+    <header class="chat-header">
+      <button class="back-btn" onclick="showPage('landing-page')" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 12-14 0"/><path d="m12 5-7 7 7 7"/></svg>
+      </button>
+      <div class="header-brand">
+        <div class="header-logo">Lex<span>Ug</span></div>
+        <div class="header-sub">Explore Ugandan Law</div>
+      </div>
+      <div class="header-actions">
+        <button class="lang-toggle" id="lang-toggle-explore" onclick="toggleLanguage()" title="Switch language">
+          <span id="lang-label-explore">🇺🇬 EN</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="chat-disclaimer-bar">
+      <span>⚠️ Civic education only — not legal advice. Consult a qualified Ugandan lawyer for your situation.</span>
+    </div>
+
+    <div class="explore-content">
+      <div class="explore-hero">
+        <h1>📚 Explore Ugandan Law</h1>
+        <p>Browse legal topics and discover your rights as a Ugandan citizen</p>
+      </div>
+
+      <div class="explore-categories" id="explore-categories">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SAVED ANSWERS PAGE ===== -->
+  <div id="saved-page" class="page">
+    <header class="chat-header">
+      <button class="back-btn" onclick="showPage('chat-page')" aria-label="Go back">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 12-14 0"/><path d="m12 5-7 7 7 7"/></svg>
+      </button>
+      <div class="header-brand">
+        <div class="header-logo">Lex<span>Ug</span></div>
+        <div class="header-sub">Saved Answers</div>
+      </div>
+      <div></div>
+    </header>
+    <div class="saved-content" id="saved-content">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Bottom Nav (mobile) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-item active" onclick="showPage('landing-page')" id="nav-home">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" onclick="showPage('chat-page')" id="nav-chat">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Chat</span>
+    </button>
+    <button class="nav-item" onclick="showPage('explore-page')" id="nav-explore">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <span>Explore</span>
+    </button>
+    <button class="nav-item" onclick="showPage('saved-page')" id="nav-saved">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+      <span>Saved</span>
+    </button>
+  </nav>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- API Key Modal -->
+  <div class="modal-overlay hidden" id="api-key-modal">
+    <div class="modal">
+      <div class="modal-logo">Lex<span>Ug</span></div>
+      <h2 class="modal-title">Get Instant Answers</h2>
+      <p class="modal-desc">Choose how you'd like to use LexUg:</p>
+      
+      <!-- Option 1: API Key -->
+      <div class="modal-options">
+        <div class="modal-option full-power">
+          <div class="option-header">
+            <span class="option-icon">⚡</span>
+            <span class="option-title">Full Power</span>
+          </div>
+          <p class="option-desc">Unlimited questions with Claude AI. Get detailed, cited answers tailored to your situation.</p>
+          <input type="password" id="api-key-input" class="modal-input" placeholder="sk-ant-..." />
+          <div class="api-note">
+            <span>🔒 Your key stays in your browser</span>
+            <a href="https://console.anthropic.com" target="_blank" rel="noopener">Get free API key</a>
+          </div>
+          <button class="modal-btn primary-btn" onclick="saveApiKey()">Use Your API Key</button>
+        </div>
+        
+        <!-- Divider -->
+        <div class="modal-divider">
+          <span>OR</span>
+        </div>
+        
+        <!-- Option 2: Demo Mode -->
+        <div class="modal-option demo-mode">
+          <div class="option-header">
+            <span class="option-icon">🎮</span>
+            <span class="option-title">Try Demo</span>
+          </div>
+          <p class="option-desc">Explore sample answers and see how LexUg works. Perfect for testing before committing.</p>
+          <div class="demo-features">
+            <div class="feature">✓ Browse 8 sample questions</div>
+            <div class="feature">✓ See example answers</div>
+            <div class="feature">✓ Zero setup required</div>
+          </div>
+          <button class="modal-btn demo-btn" onclick="skipApiKey()">Start Demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
