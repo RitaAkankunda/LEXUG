@@ -6,6 +6,35 @@ LexUg is a free, web-based civic AI companion that helps every Ugandan understan
 
 ---
 
+## 🏗️ Architecture
+
+- **Frontend**: Pure HTML/CSS/JavaScript served statically
+- **Backend**: Node.js/Express server proxying Claude AI API calls
+- **AI**: Claude 3.5 Sonnet via Anthropic API
+- **Deployment**: Static frontend + server backend
+
+## 🚀 Quick Start
+
+1. **Run the app** (no API key needed for demo mode):
+   ```bash
+   cd frontend
+   python -m http.server 8000
+   ```
+
+2. Open `http://localhost:8000` in your browser
+
+3. **Use Demo Mode**: The app works completely offline with pre-written responses in both English and Luganda!
+
+## 💰 API Key (Optional)
+
+If you want live AI responses instead of demo mode:
+- Get a free Claude API key from [console.anthropic.com](https://console.anthropic.com/)
+- Add it to `backend/.env` as `CLAUDE_API_KEY=your-key-here`
+- Start the backend: `cd backend && npm start`
+- Demo mode automatically switches to live AI when API key is available
+
+---
+
 ## ✨ Features
 
 ### 🎯 Core Functionality
@@ -19,6 +48,13 @@ LexUg is a free, web-based civic AI companion that helps every Ugandan understan
 - ✅ **English & Luganda Toggle** — Switch responses between EN and LG
 - ✅ **Luganda System Prompt** — Optimized Claude instructions for accurate Luganda answers
 - ✅ **Language Persistence** — Choice is remembered during session
+
+### 📱 Progressive Web App (PWA)
+- ✅ **Installable** — Add to home screen on mobile devices
+- ✅ **Offline Support** — Works without internet using cached responses
+- ✅ **Native App Feel** — Full-screen experience, app icons, no browser UI
+- ✅ **Background Sync** — Service worker caches content for offline access
+- ✅ **Online Status Indicator** — Shows connection status in chat interface
 
 ### 🗂️ Topic Organization
 - ✅ **Quick Topic Cards** — Pre-populated questions on:
