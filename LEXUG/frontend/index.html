@@ -104,14 +104,35 @@
       </div>
     </div>
 
-    <!-- Navigation to Explore -->
-    <div class="landing-explore-teaser">
-      <h2>Explore Ugandan Law by Topic</h2>
-      <p>Not sure what to ask? Browse our legal topics</p>
-      <div class="explore-categories-preview" id="explore-preview">
-        <!-- Populated by JS -->
+    <!-- How It Works Section -->
+    <div class="how-it-works-section">
+      <h2>How LexUg Works</h2>
+      <p>Your personal legal assistant in three simple steps</p>
+      
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">💬</div>
+          <h3>Ask Your Question</h3>
+          <p>Type any question about Ugandan law, your rights, or government in plain English or Luganda.</p>
+        </div>
+        
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">⚡</div>
+          <h3>AI Analyzes Laws</h3>
+          <p>LexUg instantly scans the 1995 Constitution and Ugandan Acts of Parliament to find accurate legal groundings.</p>
+        </div>
+        
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">✅</div>
+          <h3>Get Clear Answers</h3>
+          <p>Receive a plain-text, easy-to-understand explanation of your rights, complete with legal citations.</p>
+        </div>
       </div>
-      <button class="explore-all-btn" onclick="showPage('explore-page')">View All Topics →</button>
+      
+      <button class="explore-all-btn" onclick="showPage('chat-page')">Try it Now →</button>
     </div>
 
     <footer class="landing-footer">
@@ -145,7 +166,7 @@
     <!-- Disclaimer Banner (chat) -->
     <div class="chat-disclaimer-bar">
       <span>⚠️ Civic education only — not legal advice. Consult a qualified Ugandan lawyer for your situation.</span>
-      <span id="demo-indicator" class="demo-indicator" style="display: none;">🔓 Demo Mode</span>
+      <button id="demo-indicator" class="demo-indicator" style="display: none;" onclick="showApiKeyModal()">🔓 Demo Mode</button>
       <span id="online-status" class="online-status">🟢 Online</span>
     </div>
 

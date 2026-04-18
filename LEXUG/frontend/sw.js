@@ -1,7 +1,7 @@
 // Service Worker for LexUg PWA
-const CACHE_NAME = 'lexug-v1.0.0';
-const STATIC_CACHE = 'lexug-static-v1.0.0';
-const DYNAMIC_CACHE = 'lexug-dynamic-v1.0.0';
+const CACHE_NAME = 'lexug-v1.0.1';
+const STATIC_CACHE = 'lexug-static-v1.0.1';
+const DYNAMIC_CACHE = 'lexug-dynamic-v1.0.1';
 
 // Files to cache immediately
 const STATIC_FILES = [

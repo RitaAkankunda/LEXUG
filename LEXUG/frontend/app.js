@@ -66,24 +66,6 @@ const EXPLORE_CATEGORIES = [
     ],
   },
   {
-    id: 'elections',
-    icon: '🗳️',
-    color: 'rgba(80,100,200,0.12)',
-    borderColor: 'rgba(100,130,255,0.25)',
-    title: 'Electoral & Voting Rights',
-    description: 'Elections, voting, and political rights',
-    questions: [
-      'Who can vote in Uganda?',
-      'How are Ugandan presidents elected?',
-      'What is the electoral commission of Uganda?',
-      'How does Uganda\'s parliament work?',
-      'What are the qualifications to run for president in Uganda?',
-      'How do local council elections work in Uganda?',
-      'What is the role of the Electoral Commission?',
-      'Can political parties be banned in Uganda?',
-    ],
-  },
-  {
     id: 'education',
     icon: '🎓',
     color: 'rgba(200,100,255,0.1)',
@@ -117,6 +99,24 @@ const EXPLORE_CATEGORIES = [
       'How is the Uganda budget approved?',
       'What is decentralization in Uganda?',
       'What is the role of the Inspector General of Government (IGG)?',
+    ],
+  },
+  {
+    id: 'elections',
+    icon: '🗳️',
+    color: 'rgba(80,100,200,0.12)',
+    borderColor: 'rgba(100,130,255,0.25)',
+    title: 'Electoral & Voting Rights',
+    description: 'Elections, voting, and political rights',
+    questions: [
+      'Who can vote in Uganda?',
+      'How are Ugandan presidents elected?',
+      'What is the electoral commission of Uganda?',
+      'How does Uganda\'s parliament work?',
+      'What are the qualifications to run for president in Uganda?',
+      'How do local council elections work in Uganda?',
+      'What is the role of the Electoral Commission?',
+      'Can political parties be banned in Uganda?',
     ],
   },
 ];
@@ -726,35 +726,35 @@ async function getDemoResponse(question) {
   if (currentLanguage === 'lg') {
     if (q.includes('arrest') || q.includes('police') || q.includes('detained') || q.includes('hold') ||
         q.includes('okukwatibwa') || q.includes('polisi') || q.includes('okukuumibwa')) {
-      return `Bw'okwatibwa mu Uganda, olina eddembe ennyini ekukuumibwa Constitution ya Uganda 1995.`;
+      return DEMO_RESPONSES_LG.arrest;
     }
     if (q.includes('landlord') || q.includes('evict') || q.includes('rent') || q.includes('tenant') || q.includes('house') ||
         q.includes('omusajja') || q.includes('okugoba') || q.includes('obuyimba') || q.includes('omusikiriza')) {
-      return `Amateeka g'ensi ya Uganda gatwala abasikiriza eddembe ku okugobebwa okutali mateeka.`;
+      return DEMO_RESPONSES_LG.landlord;
     }
     if (q.includes('election') || q.includes('vote') || q.includes('parliament') || q.includes('president') ||
         q.includes('okulonda') || q.includes('okuvota') || q.includes('parliament') || q.includes('pulezidenti')) {
-      return `Enteekateeka y'okulonda mu Uganda esinziira ku Constitution ya Uganda 1995.`;
+      return DEMO_RESPONSES_LG.elections;
     }
     if (q.includes('work') || q.includes('employ') || q.includes('job') || q.includes('salary') || q.includes('labour') || q.includes('fired') ||
         q.includes('omulimu') || q.includes('okukolera') || q.includes('okusasula') || q.includes('okugoba')) {
-      return `Uganda erina amateeka amanyi ag'omulimu okukuuma eddembe ly'abakozi.`;
+      return DEMO_RESPONSES_LG.worker;
     }
-    return `Ekibuuzo ekirungi!`;
+    return `Nsonyiwa, ndi mu "Demo Mode" era sisobola kuddamu kibuuzo ekyo enkyakya. Ng'oli mu Demo, nsobola kuddamu ku:\n\n• Eddembe ly'okukwatibwa (Polisi)\n• Eddembe ly'ettaka n'amayumba\n• Eddembe ly'okulonda\n• Eddembe ly'abakozi\n\nOkufuna eby'okuddamu byonna, teeka "API Key" yo.`;
   } else {
-    if (q.includes('arrest') || q.includes('police') || q.includes('detained') || q.includes('hold')) {
-      return `If you are arrested in Uganda, you have important rights protected by the Constitution.`;
+    if (q.includes('arrest') || q.includes('police') || q.includes('detain') || q.includes('hold') || q.includes('search') || q.includes('bond') || q.includes('warrant') || q.includes('force')) {
+      return DEMO_RESPONSES.arrest;
     }
-    if (q.includes('landlord') || q.includes('evict') || q.includes('rent') || q.includes('tenant') || q.includes('house')) {
-      return `Uganda's laws give tenants real protections against unlawful eviction.`;
+    if (q.includes('land') || q.includes('evict') || q.includes('rent') || q.includes('tenant') || q.includes('house') || q.includes('mailo') || q.includes('kibanja')) {
+      return DEMO_RESPONSES.landlord;
     }
-    if (q.includes('election') || q.includes('vote') || q.includes('parliament') || q.includes('president')) {
-      return `Uganda's electoral system is governed by the Constitution and Parliamentary Elections Act.`;
+    if (q.includes('election') || q.includes('vote') || q.includes('parliament') || q.includes('president') || q.includes('political') || q.includes('council')) {
+      return DEMO_RESPONSES.elections;
     }
-    if (q.includes('work') || q.includes('employ') || q.includes('job') || q.includes('salary') || q.includes('labour') || q.includes('fired')) {
-      return `Uganda has strong labor laws to protect workers' rights under the Employment Act.`;
+    if (q.includes('work') || q.includes('employ') || q.includes('job') || q.includes('salary') || q.includes('labour') || q.includes('fired') || q.includes('wage') || q.includes('maternity') || q.includes('paternity') || q.includes('union') || q.includes('overtime') || q.includes('dismissal')) {
+      return DEMO_RESPONSES.worker;
     }
-    return `Great question! Uganda has a rich legal framework rooted in the Constitution of Uganda 1995.`;
+    return `I am currently running in **Demo Mode**, and unfortunately I don't have a pre-written sample answer for that specific question.\n\nIn Demo Mode, I am limited to answering questions related to:\n• **Police & Arrest Rights**\n• **Land & Housing Evictions**\n• **Electoral Voting**\n• **Employment Rights**\n\n*To unlock unlimited answers for Education, Government, Environmental rights, and ALL other legal topics, please enter an Anthropic API Key or start the Backend Server.*`;
   }
 }
 
