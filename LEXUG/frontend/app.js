@@ -129,6 +129,7 @@ let conversationHistory = [];
 let savedAnswers = [];
 let isTyping = false;
 let isDemoMode = false;
+let forceDemoMode = false; // New flag to force demo mode even with API key
 let apiKey = '';
 
 // ----------------------------------------------------------------
@@ -158,7 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApiKey() {
   apiKey = localStorage.getItem('lexug_api_key') || '';
-  isDemoMode = !apiKey; // Enable demo mode if no API key
+  forceDemoMode = localStorage.getItem('lexug_force_demo') === 'true';
+  isDemoMode = !apiKey || forceDemoMode; // Enable demo mode if no API key OR force demo is enabled
   updateDemoIndicator();
 
   // Hide API key modal since we're using demo mode automatically
@@ -171,7 +173,18 @@ function initApiKey() {
 function updateDemoIndicator() {
   const indicator = document.getElementById('demo-indicator');
   if (indicator) {
-    indicator.style.display = isDemoMode ? 'block' : 'none';
+    if (isDemoMode) {
+      indicator.style.display = 'block';
+      if (forceDemoMode) {
+        indicator.textContent = '🔓 Forced Demo';
+        indicator.title = 'Click to switch to API mode';
+      } else {
+        indicator.textContent = '🔓 Demo Mode';
+        indicator.title = 'Click to force demo mode';
+      }
+    } else {
+      indicator.style.display = 'none';
+    }
   }
 }
 
@@ -275,6 +288,8 @@ function saveApiKey() {
   }
   apiKey = input;
   localStorage.setItem('lexug_api_key', apiKey);
+  forceDemoMode = false; // Reset force demo mode when API key is set
+  localStorage.setItem('lexug_force_demo', 'false');
   isDemoMode = false;
   document.getElementById('api-key-modal').classList.add('hidden');
   showToast('✅ API key saved! LexUg is ready.');
@@ -294,6 +309,19 @@ function skipApiKey() {
 function proceedToChat() {
   // Called after API key is saved, navigate to chat
   showPage('chat-page');
+}
+
+function toggleForceDemoMode() {
+  forceDemoMode = !forceDemoMode;
+  localStorage.setItem('lexug_force_demo', forceDemoMode.toString());
+  isDemoMode = !apiKey || forceDemoMode;
+  updateDemoIndicator();
+  
+  if (forceDemoMode) {
+    showToast('🔓 Forced Demo Mode ON — using predefined answers');
+  } else {
+    showToast('🤖 API Mode ON — using Claude AI (if key is set)');
+  }
 }
 
 // ----------------------------------------------------------------
