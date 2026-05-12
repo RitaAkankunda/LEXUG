@@ -209,70 +209,6 @@ function updateOnlineStatus() {
   }
 }
 
-// PWA: Install prompt
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent the mini-infobar from appearing on mobile
-  e.preventDefault();
-  // Stash the event so it can be triggered later
-  deferredPrompt = e;
-
-  // Show install button
-  showInstallPrompt();
-});
-
-function showInstallPrompt() {
-  if (!deferredPrompt) return;
-
-  // Create install prompt
-  const installToast = document.createElement('div');
-  installToast.className = 'install-prompt';
-  installToast.innerHTML = `
-    <div class="install-content">
-      <span>📱 Install LexUg for offline access!</span>
-      <button onclick="installPWA()" class="install-btn">Install</button>
-      <button onclick="dismissInstall()" class="dismiss-btn">×</button>
-    </div>
-  `;
-
-  document.body.appendChild(installToast);
-
-  // Auto-hide after 10 seconds
-  setTimeout(() => {
-    if (installToast.parentNode) {
-      installToast.remove();
-    }
-  }, 10000);
-}
-
-function installPWA() {
-  if (!deferredPrompt) return;
-
-  // Show the install prompt
-  deferredPrompt.prompt();
-
-  // Wait for the user to respond to the prompt
-  deferredPrompt.userChoice.then((choiceResult) => {
-    if (choiceResult.outcome === 'accepted') {
-      console.log('User accepted the install prompt');
-      showToast('✅ LexUg installed successfully!');
-    } else {
-      console.log('User dismissed the install prompt');
-    }
-    deferredPrompt = null;
-
-    // Hide install prompt
-    const prompt = document.querySelector('.install-prompt');
-    if (prompt) prompt.remove();
-  });
-}
-
-function dismissInstall() {
-  const prompt = document.querySelector('.install-prompt');
-  if (prompt) prompt.remove();
-  deferredPrompt = null;
-}
 
 function showApiKeyModal() {
   document.getElementById('api-key-modal').classList.remove('hidden');
@@ -353,7 +289,7 @@ function showPage(pageId) {
 function renderLandingCards() {
   const grid = document.getElementById('landing-quick-cards');
   if (!grid) return;
-  const subset = QUICK_CARDS.slice(0, 4);
+  const subset = QUICK_CARDS.slice(0, 3);
   grid.innerHTML = subset.map(card => `
     <button class="quick-card" onclick="askFromCard(${JSON.stringify(card.text).replace(/"/g, '&quot;')})">
       <span class="qc-icon">${card.icon}</span>

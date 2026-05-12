@@ -1,15 +1,29 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Claude API proxy endpoint
+// Serve frontend files
+const frontendPath = path.join(__dirname, '..', 'frontend');
+console.log('Serving frontend from:', frontendPath);
+app.use(express.static(frontendPath));
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    apiKeyConfigured: !!process.env.CLAUDE_API_KEY,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Claude API proxy
 app.post('/api/chat', async (req, res) => {
   try {
     const { messages, system } = req.body;
@@ -26,7 +40,7 @@ app.post('/api/chat', async (req, res) => {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
         system: system,
         messages: messages,
@@ -40,17 +54,20 @@ app.post('/api/chat', async (req, res) => {
 
     const data = await response.json();
     res.json(data);
+
   } catch (error) {
     console.error('API Error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+// Catch-all: serve frontend for any other route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`LexUg backend server running on port ${PORT}`);
+  console.log(`\n🇺🇬 LexUg running at http://localhost:${PORT}`);
+  console.log(`   Frontend: ${frontendPath}`);
+  console.log(`   API Key: ${process.env.CLAUDE_API_KEY ? '✅ Configured' : '❌ Missing'}\n`);
 });

@@ -34,38 +34,35 @@
         <div class="shape shape-2"></div>
         <div class="shape shape-3"></div>
       </div>
-      <div class="hero-content">
-        <div class="logo-lockup">
-          <div class="logo-mark">
-            <span class="logo-lex">Lex</span><span class="logo-ug">Ug</span>
-          </div>
-          <div class="logo-badge">🇺🇬 Uganda</div>
+      <header class="landing-header">
+        <div class="landing-brand">
+          <span class="logo-lex">Lex</span><span class="logo-ug">Ug</span>
+          <span class="logo-badge">UG Uganda</span>
         </div>
-        <h1 class="hero-title">Know Your Rights.<br/><span class="gradient-text">Speak Your Language.</span></h1>
-        <p class="hero-tagline">Uganda's first AI civic companion — ask anything about Ugandan law, your rights, and the Constitution. Get plain, clear answers in seconds.</p>
-        
-        <div class="hero-stats">
-          <div class="stat-pill">
-            <span class="stat-icon">📜</span>
-            <span>Constitution of Uganda 1995</span>
-          </div>
-          <div class="stat-pill">
-            <span class="stat-icon">⚡</span>
-            <span>Instant Answers</span>
-          </div>
-          <div class="stat-pill">
-            <span class="stat-icon">🆓</span>
-            <span>100% Free</span>
+        <button class="landing-top-btn" onclick="showPage('chat-page')">Start Asking</button>
+      </header>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="hero-content">
+            <div class="logo-lockup">
+              <div class="logo-mark">
+                <span class="logo-lex">Lex</span><span class="logo-ug">Ug</span>
+              </div>
+              <div class="logo-badge">🇺🇬 Uganda</div>
+            </div>
+            <h1 class="hero-title">Know Your Rights.<br/><span class="gradient-text">Speak Your Language.</span></h1>
+            <p class="hero-tagline">Ask about Ugandan law, rights, and the Constitution — fast and clearly.</p>
+            <div class="hero-cta-row">
+              <button class="cta-button" id="start-asking-btn" onclick="showPage('chat-page')">
+                <span>Start Asking</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+              <button class="cta-secondary" onclick="showPage('explore-page')">
+                <span>📚 Browse by Topic</span>
+              </button>
+            </div>
           </div>
         </div>
-
-        <button class="cta-button" id="start-asking-btn" onclick="showPage('chat-page')">
-          <span>Start Asking</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </button>
-        <button class="cta-secondary" onclick="showPage('explore-page')">
-          <span>📚 Browse by Topic</span>
-        </button>
       </div>
 
       <!-- Quick Topic Cards Preview -->
@@ -76,71 +73,63 @@
         </div>
       </div>
     </div>
+      <div class="features-strip">
+        <div class="feature-item">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-text">
+            <strong>Claude AI Powered</strong>
+            <span>Accurate, nuanced answers about Ugandan law</span>
+          </div>
+        </div>
+        <div class="feature-divider"></div>
+        <div class="feature-item">
+          <div class="feature-icon">📱</div>
+          <div class="feature-text">
+            <strong>Mobile First</strong>
+            <span>Designed for Uganda's phone-first users</span>
+          </div>
+        </div>
+        <div class="feature-divider"></div>
+        <div class="feature-item">
+          <div class="feature-icon">🗣️</div>
+          <div class="feature-text">
+            <strong>Luganda & English</strong>
+            <span>Ask in plain language and get a clear response.</span>
+          </div>
+        </div>
+      </div>
 
-    <!-- Features Strip -->
-    <div class="features-strip">
-      <div class="feature-item">
-        <div class="feature-icon">🤖</div>
-        <div class="feature-text">
-          <strong>Claude AI Powered</strong>
-          <span>Accurate, nuanced answers about Ugandan law</span>
+      <div class="how-it-works-section">
+        <h2>How LexUg Works</h2>
+        <p>Your personal legal assistant in three simple steps.</p>
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon">💬</div>
+            <h3>Ask a question</h3>
+            <p>Tell LexUg what you want to know about Ugandan law or your rights.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon">⚡</div>
+            <h3>Get a clear answer</h3>
+            <p>Receive a concise, easy-to-understand response backed by Ugandan legal guidance.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon">✅</div>
+            <h3>Know your next step</h3>
+            <p>Use the answer to better understand your rights and what to do next.</p>
+          </div>
         </div>
+        <button class="explore-all-btn" onclick="showPage('chat-page')">Try it Now →</button>
       </div>
-      <div class="feature-divider"></div>
-      <div class="feature-item">
-        <div class="feature-icon">📱</div>
-        <div class="feature-text">
-          <strong>Mobile First</strong>
-          <span>Built for Uganda's phone-first users</span>
-        </div>
-      </div>
-      <div class="feature-divider"></div>
-      <div class="feature-item">
-        <div class="feature-icon">🗣️</div>
-        <div class="feature-text">
-          <strong>Luganda Support</strong>
-          <span>Get answers in English or Luganda</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- How It Works Section -->
-    <div class="how-it-works-section">
-      <h2>How LexUg Works</h2>
-      <p>Your personal legal assistant in three simple steps</p>
-      
-      <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-number">1</div>
-          <div class="step-icon">💬</div>
-          <h3>Ask Your Question</h3>
-          <p>Type any question about Ugandan law, your rights, or government in plain English or Luganda.</p>
-        </div>
-        
-        <div class="step-card">
-          <div class="step-number">2</div>
-          <div class="step-icon">⚡</div>
-          <h3>AI Analyzes Laws</h3>
-          <p>LexUg instantly scans the 1995 Constitution and Ugandan Acts of Parliament to find accurate legal groundings.</p>
-        </div>
-        
-        <div class="step-card">
-          <div class="step-number">3</div>
-          <div class="step-icon">✅</div>
-          <h3>Get Clear Answers</h3>
-          <p>Receive a plain-text, easy-to-understand explanation of your rights, complete with legal citations.</p>
-        </div>
-      </div>
-      
-      <button class="explore-all-btn" onclick="showPage('chat-page')">Try it Now →</button>
-    </div>
-
-    <footer class="landing-footer">
-      <div class="footer-logo">Lex<span>Ug</span></div>
-      <p>Built for every Ugandan. Powered by Claude AI.</p>
-      <p class="footer-disclaimer">This app provides civic education, not legal advice. Always consult a qualified Ugandan lawyer for your specific legal situation.</p>
-    </footer>
-  </div>
+      <footer class="landing-footer">
+        <div class="footer-logo">Lex<span>Ug</span></div>
+        <p>Built for every Ugandan. Powered by Claude AI.</p>
+        <p class="footer-disclaimer">LexUg provides civic education only, not legal advice. For your specific situation, consult a qualified Ugandan lawyer.</p>
+      </footer>    </div>
 
   <!-- ===== CHAT PAGE ===== -->
   <div id="chat-page" class="page">
