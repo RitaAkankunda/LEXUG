@@ -4,14 +4,26 @@
 
 LexUg is a free, web-based civic AI companion that helps every Ugandan understand their rights, laws, and how government works — in plain English or Luganda.
 
+## 📱 Now Available as a Mobile App!
+
+We've created a **React Native mobile app** with Firebase integration:
+- ✅ User accounts and authentication
+- ✅ Chat history stored in Firebase
+- ✅ Works on iOS and Android
+- ✅ User profiles and preferences
+
+👉 **[Mobile App Setup Guide](./MOBILE_SETUP.md)**
+
 ---
 
 ## 🏗️ Architecture
 
 - **Frontend**: Pure HTML/CSS/JavaScript served statically
 - **Backend**: Node.js/Express server proxying Claude AI API calls
+- **Mobile**: React Native (Expo) with Firebase
 - **AI**: Claude 3.5 Sonnet via Anthropic API
-- **Deployment**: Static frontend + server backend
+- **Database**: Firebase Realtime Database (mobile app)
+- **Deployment**: Static frontend + server backend + mobile apps
 
 ## 🚀 Quick Start
 

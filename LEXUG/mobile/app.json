@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "LexUg",
+    "slug": "lexug",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "splash": {
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "bundleIdentifier": "com.lexug.app",
+      "supportsTabletMode": true
+    },
+    "android": {
+      "package": "com.lexug.app"
+    },
+    "extra": {
+      "API_URL": "http://localhost:3002"
+    }
+  }
+}
