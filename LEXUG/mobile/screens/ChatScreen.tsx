@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -10,12 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { chatService } from '../services/api';
-
-type ChatMessage = {
-  role: 'user' | 'assistant';
-  content: string;
-};
+import { AuthContext } from '../context/AuthContext';
+import { ChatMessage, chatService } from '../services/api';
 
 const SYSTEM_PROMPT = `You are LexUg, a helpful AI assistant specializing in Ugandan law and civic rights.
 You provide clear, accurate information about Ugandan laws, constitutional rights, and civic processes.
@@ -33,11 +29,32 @@ function createConversationId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-export default function ChatScreen() {
+type ChatScreenParams = {
+  conversationId?: string;
+  messages?: ChatMessage[];
+  openedAt?: number;
+};
+
+export default function ChatScreen({ route }: { route?: { params?: ChatScreenParams } }) {
+  const { state } = useContext(AuthContext);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [conversationId] = useState(createConversationId);
+  const [conversationId, setConversationId] = useState(createConversationId);
+
+  useEffect(() => {
+    if (!route?.params?.conversationId || !route.params.messages) return;
+
+    setConversationId(route.params.conversationId);
+    setMessages(route.params.messages);
+    setInput('');
+  }, [route?.params?.conversationId, route?.params?.messages, route?.params?.openedAt]);
+
+  const handleNewChat = () => {
+    setConversationId(createConversationId());
+    setMessages([]);
+    setInput('');
+  };
 
   const handleSendMessage = async (text: string = input) => {
     const question = text.trim();
@@ -65,10 +82,12 @@ export default function ChatScreen() {
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
-      try {
-        await chatService.saveChat(conversationId, updatedMessages, question, answer);
-      } catch (saveError) {
-        console.warn('Chat answer was not saved:', saveError);
+      if (!state.isGuest) {
+        try {
+          await chatService.saveChat(conversationId, updatedMessages, question, answer);
+        } catch (saveError) {
+          console.warn('Chat answer was not saved:', saveError);
+        }
       }
     } catch (error) {
       console.error('Chat error:', error);
@@ -96,6 +115,9 @@ export default function ChatScreen() {
           <View style={styles.emptyState}>
             <Text style={styles.title}>LexUg</Text>
             <Text style={styles.subtitle}>Ask about your legal rights in Uganda</Text>
+            <Text style={styles.notice}>
+              Civic education only. For legal advice, speak with a qualified lawyer.
+            </Text>
 
             <Text style={styles.quickCardsTitle}>Quick Questions</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -112,19 +134,29 @@ export default function ChatScreen() {
             </ScrollView>
           </View>
         ) : (
-          messages.map((msg, index) => (
-            <View
-              key={`${msg.role}-${index}`}
-              style={[
-                styles.message,
-                msg.role === 'user' ? styles.userMessage : styles.assistantMessage,
-              ]}
-            >
-              <Text style={msg.role === 'user' ? styles.userText : styles.assistantText}>
-                {msg.content}
+          <View>
+            <View style={styles.chatHeader}>
+              <Text style={styles.chatHeaderText}>
+                {state.isGuest ? 'Guest chat' : 'Saved chat'}
               </Text>
+              <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
+                <Text style={styles.newChatButtonText}>New</Text>
+              </TouchableOpacity>
             </View>
-          ))
+            {messages.map((msg, index) => (
+              <View
+                key={`${msg.role}-${index}`}
+                style={[
+                  styles.message,
+                  msg.role === 'user' ? styles.userMessage : styles.assistantMessage,
+                ]}
+              >
+                <Text style={msg.role === 'user' ? styles.userText : styles.assistantText}>
+                  {msg.content}
+                </Text>
+              </View>
+            ))}
+          </View>
         )}
 
         {loading && (
@@ -181,7 +213,21 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#666',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  notice: {
+    backgroundColor: '#fff8e1',
+    borderColor: '#f4d27a',
+    borderRadius: 8,
+    borderWidth: 1,
+    color: '#5f4a12',
+    fontSize: 12,
+    lineHeight: 17,
     marginBottom: 24,
+    maxWidth: 320,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     textAlign: 'center',
   },
   quickCardsTitle: {
@@ -189,6 +235,30 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 12,
     color: '#333',
+  },
+  chatHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  chatHeaderText: {
+    color: '#777',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  newChatButton: {
+    backgroundColor: '#fff',
+    borderColor: '#D21034',
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  newChatButtonText: {
+    color: '#D21034',
+    fontSize: 12,
+    fontWeight: '700',
   },
   quickCard: {
     backgroundColor: '#fff',

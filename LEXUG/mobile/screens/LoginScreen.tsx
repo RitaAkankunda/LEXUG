@@ -10,21 +10,29 @@ import {
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 
-export default function LoginScreen({ navigation }: any) {
+type LoginParams = {
+  email?: string;
+  accountCreated?: boolean;
+};
+
+export default function LoginScreen({ navigation, route }: any) {
   const { continueAsGuest, signIn } = useContext(AuthContext);
-  const [email, setEmail] = useState('');
+  const params = (route?.params || {}) as LoginParams;
+  const [email, setEmail] = useState(params.email || '');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedEmail || !password) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     setLoading(true);
     try {
-      await signIn(email.trim(), password);
+      await signIn(trimmedEmail, password);
     } catch (error: any) {
       Alert.alert('Login Failed', error.response?.data?.error || 'Invalid credentials');
     } finally {
@@ -36,6 +44,12 @@ export default function LoginScreen({ navigation }: any) {
     <View style={styles.container}>
       <Text style={styles.title}>LexUg</Text>
       <Text style={styles.subtitle}>Ugandan Civic AI Companion</Text>
+
+      {params.accountCreated && (
+        <View style={styles.successBox}>
+          <Text style={styles.successText}>Account created. Log in to continue.</Text>
+        </View>
+      )}
 
       <TextInput
         style={styles.input}
@@ -92,8 +106,22 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 24,
     color: '#666',
+  },
+  successBox: {
+    backgroundColor: '#e8f5e9',
+    borderColor: '#a5d6a7',
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 16,
+    padding: 12,
+  },
+  successText: {
+    color: '#1b5e20',
+    fontSize: 13,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,

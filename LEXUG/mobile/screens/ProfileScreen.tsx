@@ -6,16 +6,20 @@ import { AuthContext } from '../context/AuthContext';
 export default function ProfileScreen() {
   const { signOut, state } = useContext(AuthContext);
   const [email, setEmail] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadProfile();
-  }, []);
+    void loadProfile();
+  }, [state.isGuest]);
 
   const loadProfile = async () => {
     try {
+      setLoading(true);
       const userEmail = await AsyncStorage.getItem('userEmail');
+      const storedDisplayName = await AsyncStorage.getItem('userDisplayName');
       setEmail(state.isGuest ? 'Guest mode' : userEmail || 'Not set');
+      setDisplayName(state.isGuest ? 'Guest' : storedDisplayName || 'LexUg user');
     } finally {
       setLoading(false);
     }
@@ -43,9 +47,10 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>U</Text>
+          <Text style={styles.avatarText}>{displayName.charAt(0).toUpperCase()}</Text>
         </View>
 
+        <Text style={styles.name}>{displayName}</Text>
         <Text style={styles.email}>{email}</Text>
 
         <View style={styles.infoBox}>
@@ -97,10 +102,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#D21034',
   },
+  name: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#222',
+    marginBottom: 6,
+  },
   email: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: '#666',
     marginBottom: 20,
   },
   infoBox: {

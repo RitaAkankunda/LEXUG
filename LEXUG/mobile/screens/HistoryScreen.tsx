@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -8,17 +8,37 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { chatService } from '../services/api';
+import { AuthContext } from '../context/AuthContext';
+import { ChatMessage, chatService } from '../services/api';
 
 type ChatHistoryItem = {
   id: string;
   timestamp: string;
   question: string;
   answer?: string;
-  messages?: unknown[];
+  messages?: ChatMessage[];
 };
 
-function isChatHistoryItem(value: unknown): value is Omit<ChatHistoryItem, 'id'> {
+function isChatMessage(value: unknown): value is ChatMessage {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    ((value as { role?: unknown }).role === 'user' ||
+      (value as { role?: unknown }).role === 'assistant') &&
+    typeof (value as { content?: unknown }).content === 'string'
+  );
+}
+
+function normalizeMessages(messages: unknown): ChatMessage[] | undefined {
+  if (!Array.isArray(messages)) return undefined;
+
+  const normalizedMessages = messages.filter(isChatMessage);
+  return normalizedMessages.length > 0 ? normalizedMessages : undefined;
+}
+
+function isChatHistoryItem(value: unknown): value is Omit<ChatHistoryItem, 'id' | 'messages'> & {
+  messages?: unknown;
+} {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -29,13 +49,21 @@ function isChatHistoryItem(value: unknown): value is Omit<ChatHistoryItem, 'id'>
   );
 }
 
-export default function HistoryScreen() {
+export default function HistoryScreen({ navigation }: any) {
+  const { state } = useContext(AuthContext);
   const [chats, setChats] = useState<ChatHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openingId, setOpeningId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadHistory();
-  }, []);
+    if (state.isGuest) {
+      setChats([]);
+      setLoading(false);
+      return;
+    }
+
+    void loadHistory();
+  }, [state.isGuest]);
 
   const loadHistory = async () => {
     try {
@@ -48,6 +76,7 @@ export default function HistoryScreen() {
         .map(([id, chat]) => ({
           id,
           ...chat,
+          messages: normalizeMessages(chat.messages),
         }))
         .sort(
           (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -58,6 +87,43 @@ export default function HistoryScreen() {
       console.error('Load history error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpen = async (item: ChatHistoryItem) => {
+    try {
+      setOpeningId(item.id);
+
+      if (item.messages) {
+        navigation.navigate('Chat', {
+          conversationId: item.id,
+          messages: item.messages,
+          openedAt: Date.now(),
+        });
+        return;
+      }
+
+      const conversation = await chatService.getConversation(item.id);
+      const messages = normalizeMessages(
+        typeof conversation === 'object' && conversation !== null
+          ? (conversation as { messages?: unknown }).messages
+          : undefined
+      );
+
+      if (!messages) {
+        Alert.alert('Conversation unavailable', 'This saved chat could not be opened.');
+        return;
+      }
+
+      navigation.navigate('Chat', {
+        conversationId: item.id,
+        messages,
+        openedAt: Date.now(),
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to open conversation');
+    } finally {
+      setOpeningId(null);
     }
   };
 
@@ -80,7 +146,11 @@ export default function HistoryScreen() {
   };
 
   const renderChat = ({ item }: { item: ChatHistoryItem }) => (
-    <View style={styles.chatItem}>
+    <TouchableOpacity
+      style={styles.chatItem}
+      onPress={() => handleOpen(item)}
+      disabled={openingId === item.id}
+    >
       <View style={styles.chatContent}>
         <Text style={styles.question} numberOfLines={2}>
           Q: {item.question}
@@ -90,9 +160,13 @@ export default function HistoryScreen() {
         </Text>
       </View>
       <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
-        <Text style={styles.deleteText}>X</Text>
+        {openingId === item.id ? (
+          <ActivityIndicator size="small" color="#D21034" />
+        ) : (
+          <Text style={styles.deleteText}>X</Text>
+        )}
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   if (loading) {
@@ -107,9 +181,15 @@ export default function HistoryScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Chat History</Text>
 
-      {chats.length === 0 ? (
+      {state.isGuest ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>No conversations yet</Text>
+          <Text style={styles.emptyTitle}>Guest history is off</Text>
+          <Text style={styles.emptyText}>Sign in to save and reopen conversations.</Text>
+        </View>
+      ) : chats.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>No conversations yet</Text>
+          <Text style={styles.emptyText}>Your saved chats will appear here.</Text>
         </View>
       ) : (
         <FlatList
@@ -181,8 +261,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  emptyTitle: {
+    color: '#333',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
   emptyText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#777',
+    textAlign: 'center',
   },
 });

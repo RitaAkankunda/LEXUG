@@ -101,8 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         dispatch({ type: 'SIGN_IN', token: result.token });
       },
       signUp: async (email: string, password: string, displayName: string) => {
-        const result = await authService.signup(email, password, displayName);
-        dispatch({ type: 'SIGN_IN', token: result.token });
+        await authService.signup(email, password, displayName);
       },
       continueAsGuest: () => {
         dispatch({ type: 'CONTINUE_AS_GUEST' });

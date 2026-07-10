@@ -9,7 +9,7 @@ type AuthResponse = {
   token: string;
 };
 
-type ChatMessage = {
+export type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
 };
@@ -52,12 +52,6 @@ export const authService = {
       displayName,
     });
 
-    if (response.data.token) {
-      await AsyncStorage.setItem('authToken', response.data.token);
-      await AsyncStorage.setItem('userId', response.data.uid);
-      await AsyncStorage.setItem('userEmail', response.data.email);
-    }
-
     return response.data;
   },
 
@@ -71,13 +65,16 @@ export const authService = {
       await AsyncStorage.setItem('authToken', response.data.token);
       await AsyncStorage.setItem('userId', response.data.uid);
       await AsyncStorage.setItem('userEmail', response.data.email);
+      if (response.data.displayName) {
+        await AsyncStorage.setItem('userDisplayName', response.data.displayName);
+      }
     }
 
     return response.data;
   },
 
   async logout() {
-    await AsyncStorage.multiRemove(['authToken', 'userId', 'userEmail']);
+    await AsyncStorage.multiRemove(['authToken', 'userId', 'userEmail', 'userDisplayName']);
   },
 
   async getToken() {
