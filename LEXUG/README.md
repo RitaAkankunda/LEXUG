@@ -4,7 +4,7 @@
 
 LexUg is a free, web-based civic AI companion that helps every Ugandan understand their rights, laws, and how government works — in plain English or Luganda.
 
-## 📱 Now Available as a Mobile App!
+##  Now Available as a Mobile App!
 
 We've created a **React Native mobile app** with Firebase integration:
 - ✅ User accounts and authentication
@@ -12,11 +12,11 @@ We've created a **React Native mobile app** with Firebase integration:
 - ✅ Works on iOS and Android
 - ✅ User profiles and preferences
 
-👉 **[Mobile App Setup Guide](./MOBILE_SETUP.md)**
+ **[Mobile App Setup Guide](./MOBILE_SETUP.md)**
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 - **Frontend**: Pure HTML/CSS/JavaScript served statically
 - **Backend**: Node.js/Express server proxying Claude AI API calls
@@ -25,7 +25,7 @@ We've created a **React Native mobile app** with Firebase integration:
 - **Database**: Firebase Realtime Database (mobile app)
 - **Deployment**: Static frontend + server backend + mobile apps
 
-## 🚀 Quick Start
+##  Quick Start
 
 1. **Run the app** (no API key needed for demo mode):
    ```bash
@@ -37,7 +37,7 @@ We've created a **React Native mobile app** with Firebase integration:
 
 3. **Use Demo Mode**: The app works completely offline with pre-written responses in both English and Luganda!
 
-## 💰 API Key (Optional)
+##  API Key (Optional)
 
 If you want live AI responses instead of demo mode:
 - Get a free Claude API key from [console.anthropic.com](https://console.anthropic.com/)
@@ -47,35 +47,35 @@ If you want live AI responses instead of demo mode:
 
 ---
 
-## ✨ Features
+##  Features
 
-### 🎯 Core Functionality
+### Core Functionality
 - ✅ **Landing Page** — Clean welcome screen with tagline, "Start Asking" CTA, and topic preview
 - ✅ **Smart Chat Interface** — Ask questions about Ugandan law, get instant AI-powered answers
 - ✅ **Conversation Memory** — Follow-up questions work naturally; AI remembers context
 - ✅ **Legal Citations** — Every answer cites specific articles (Constitution, Acts, etc.)
 - ✅ **Persistent Disclaimers** — Clear messaging that LexUg is civic education, not legal advice
 
-### 🗣️ Multilingual Support
+###  Multilingual Support
 - ✅ **English & Luganda Toggle** — Switch responses between EN and LG
 - ✅ **Luganda System Prompt** — Optimized Claude instructions for accurate Luganda answers
 - ✅ **Language Persistence** — Choice is remembered during session
 
-### 📱 Progressive Web App (PWA)
+###  Progressive Web App (PWA)
 - ✅ **Installable** — Add to home screen on mobile devices
 - ✅ **Offline Support** — Works without internet using cached responses
 - ✅ **Native App Feel** — Full-screen experience, app icons, no browser UI
 - ✅ **Background Sync** — Service worker caches content for offline access
 - ✅ **Online Status Indicator** — Shows connection status in chat interface
 
-### 🗂️ Topic Organization
+###  Topic Organization
 - ✅ **Quick Topic Cards** — Pre-populated questions on:
-  - 👮 Police & Arrest Rights
-  - 🏠 Land & Housing Rights
-  - 👷 Employment Rights
-  - 🗳️ Electoral & Voting Rights
-  - 🎓 Education Rights
-  - 🏛️ How Government Works
+  -  Police & Arrest Rights
+  -  Land & Housing Rights
+  -  Employment Rights
+  -  Electoral & Voting Rights
+  -  Education Rights
+  -  How Government Works
   - + 2 more
 
 - ✅ **Explore Page** — Browse all topics by category
@@ -83,25 +83,25 @@ If you want live AI responses instead of demo mode:
   - Color-coded categories
   - Direct "Ask" buttons for each topic
 
-### 💾 User Engagement
+### User Engagement
 - ✅ **Save Answers** — Bookmark important responses for later
 - ✅ **Share on WhatsApp** — Send answers directly to friends/family
 - ✅ **Copy to Clipboard** — Easy answer sharing
 - ✅ **Saved Answers Page** — Dedicated section to view all bookmarks
 
-### 📱 Mobile Experience
+### Mobile Experience
 - ✅ **Mobile-First Design** — Optimized for phone browsers (primary user access method)
 - ✅ **Bottom Navigation** — Easy switching between Home, Chat, Explore, Saved
 - ✅ **Responsive Layout** — Works perfectly on screens from 320px to 4K
 - ✅ **Touch-Friendly UI** — Large buttons, smooth interactions
 
-### 🎨 Design & Branding
+###  Design & Branding
 - ✅ **Ugandan Flag Colors** — Black (#0d0d0d), Yellow (#FCDC4D), Red (#D21034)
 - ✅ **Modern Design System** — Glassmorphism, smooth animations, accessible contrast
 - ✅ **Professional Typography** — Inter (body), Space Grotesk (display)
 - ✅ **Dark Mode** — Battery-efficient dark theme for African mobile users
 
-### 🤖 AI Integration
+### AI Integration
 - ✅ **Claude 3.5 Sonnet API** — Latest Anthropic model
 - ✅ **System Prompts** — Context-aware Ugandan law expertise
 - ✅ **Demo Mode** — Pre-loaded sample responses for testing
@@ -109,7 +109,7 @@ If you want live AI responses instead of demo mode:
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. **Set Up Locally**
 ```bash
@@ -141,7 +141,7 @@ npx http-server
 
 ---
 
-## 📋 File Structure
+## File Structure
 
 ```
 LEXUG/
@@ -156,7 +156,7 @@ LEXUG/
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
 ### API Key Management
 Keys are **stored locally in browser localStorage** under `lexug_api_key`. They never leave your device.
@@ -180,7 +180,7 @@ Customized for Ugandan legal context with proper citations:
 ```
 You are LexUg — Uganda's trusted civic AI companion. 
 Answer in plain English, cite laws (e.g., "Article 23 of the Constitution").
-Always end with: "⚠️ Civic education only — not legal advice..."
+Always end with: "Civic education only — not legal advice..."
 ```
 
 **Luganda:**
@@ -191,7 +191,7 @@ Ddamu mu Luganda... [structured for law answers]
 
 ---
 
-## 🌐 Deployment Options
+##  Deployment Options
 
 ### **Option 1: Netlify (Recommended - Free)**
 Easiest option for static sites + serverless functions.
@@ -258,7 +258,7 @@ Shared hosting, VPS, or cloud:
 
 ---
 
-## 🔒 Security Notes
+##  Security Notes
 
 1. **API Keys are Client-Side** — Users store their own Claude keys in browser
 2. **No Backend** — LexUg is entirely frontend; no database to breach
@@ -277,7 +277,7 @@ fetch('https://yourdomain.com/api/chat', {
 
 ---
 
-## 📊 Performance & Analytics (Optional)
+##  Performance & Analytics (Optional)
 
 Add Google Analytics to track usage:
 
@@ -300,7 +300,7 @@ gtag('event', 'ask_question', { category: 'engagement' });
 
 ---
 
-## 🎓 API Costs
+##  API Costs
 
 **Claude 3.5 Sonnet Pricing (as of 2024):**
 - Input: $3 / 1M tokens
@@ -312,7 +312,7 @@ gtag('event', 'ask_question', { category: 'engagement' });
 
 ---
 
-## 🛠️ Development
+## Development
 
 ### Local Testing
 ```bash
@@ -341,7 +341,7 @@ Refine system prompts in `getSystemPrompt()` function
 
 ---
 
-## 📈 Future Enhancements
+## Future Enhancements
 
 - [ ] **Backend API** — Proxy Claude calls for better control
 - [ ] **Database** — Save user interactions (with consent)
@@ -354,7 +354,7 @@ Refine system prompts in `getSystemPrompt()` function
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! To help:
 
@@ -366,13 +366,13 @@ We welcome contributions! To help:
 
 ---
 
-## 📜 License
+## License
 
 MIT License — Free to use, modify, and share.
 
 ---
 
-## ⚖️ Legal Disclaimer
+##  Legal Disclaimer
 
 **LexUg provides civic education only** — it is not legal advice. For your specific legal situation, please consult a **qualified Ugandan lawyer**.
 
@@ -380,9 +380,9 @@ LexUg is powered by Claude AI and is not affiliated with the Government of Ugand
 
 ---
 
-## 🙏 Credits
+##  Credits
 
-Built with ❤️ for Ugandans by [Rita Akankunda](https://github.com/RitaAkankunda)
+Built with  for Ugandans by [Rita Akankunda](https://github.com/RitaAkankunda)
 
 Powered by:
 - [Claude 3.5 Sonnet](https://anthropic.com) — AI responses
@@ -391,7 +391,7 @@ Powered by:
 
 ---
 
-## 📞 Support
+##  Support
 
 - **Questions?** Check GitHub Issues
 - **Bug Report?** Open an issue with details
