@@ -1,0 +1,14 @@
+node_modules/
+.env
+npm-debug.log*
+
+# data/laws/*.json (the verified law corpus) IS tracked - it's real work
+# product, not generated/local state. Only the regeneratable index and
+# local dev fallback storage are excluded.
+data/law-index.json
+data/users.json
+data/chats.json
+services-account.json.json
+*service*account*.json
+*.pem
+*.p12

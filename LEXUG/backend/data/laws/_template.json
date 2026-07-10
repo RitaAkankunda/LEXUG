@@ -1,0 +1,16 @@
+[
+  {
+    "act": "Employment Act, 2006",
+    "section": "58",
+    "title": "Termination by employer",
+    "text": "Paste the exact section text from ULII here, word for word. Do not summarize or paraphrase — the retrieval system quotes this directly and the app cites it as the source of law.",
+    "sourceUrl": "https://ulii.org/paste-the-exact-page-url-here"
+  },
+  {
+    "act": "Employment Act, 2006",
+    "section": "65",
+    "title": "Notice of termination of employment",
+    "text": "Paste the next section here as a separate array entry. One entry per section/article, not one entry per whole Act.",
+    "sourceUrl": "https://ulii.org/paste-the-exact-page-url-here"
+  }
+]
