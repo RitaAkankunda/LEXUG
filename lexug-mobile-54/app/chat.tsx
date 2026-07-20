@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -16,6 +16,9 @@ import Animated, {
   FadeInDown,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
   withTiming,
 } from "react-native-reanimated";
 import { colors, radius, spacing, type } from "@/constants/theme";
@@ -27,6 +30,9 @@ type DisplayMessage = ChatMessage & {
   id: string;
   sources?: ChatSource[];
   isError?: boolean;
+  isDemo?: boolean;
+  citation?: string | null;
+  note?: string | null;
 };
 
 // Matches the four Acts actually indexed in the backend corpus - each
@@ -56,6 +62,30 @@ const TOPICS: {
 ];
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+function TypingDot({ delay }: { delay: number }) {
+  const translateY = useSharedValue(0);
+
+  useEffect(() => {
+    translateY.value = withDelay(
+      delay,
+      withRepeat(
+        withSequence(
+          withTiming(-4, { duration: 300 }),
+          withTiming(0, { duration: 300 })
+        ),
+        -1,
+        false
+      )
+    );
+  }, [delay, translateY]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  return <Animated.View style={[styles.typingDot, animatedStyle]} />;
+}
 
 function TopicCard({
   icon,
@@ -113,10 +143,19 @@ export default function ChatScreen() {
       const answer = await chatService.ask(
         nextMessages.map(({ role, content }) => ({ role, content }))
       );
-      const text = answer.content.map((block) => block.text).join("\n");
+      const fallbackText = answer.content.map((block) => block.text).join("\n");
+      const content = answer.isDemo && answer.body ? answer.body : fallbackText;
       setMessages((prev) => [
         ...prev,
-        { id: `${Date.now()}-a`, role: "assistant", content: text, sources: answer.sources },
+        {
+          id: `${Date.now()}-a`,
+          role: "assistant",
+          content,
+          sources: answer.sources,
+          isDemo: answer.isDemo,
+          citation: answer.citation,
+          note: answer.note,
+        },
       ]);
     } catch (error) {
       setMessages((prev) => [
@@ -218,9 +257,16 @@ export default function ChatScreen() {
                 style={[
                   styles.bubble,
                   item.role === "user" ? styles.bubbleUser : styles.bubbleAssistant,
+                  item.role === "assistant" && styles.bubbleAssistantWide,
                   item.isError && styles.bubbleError,
                 ]}
               >
+                {!!item.citation && (
+                  <View style={styles.citationHeader}>
+                    <Ionicons name="bookmark" size={12} color={colors.accent} />
+                    <Text style={styles.citationText}>{item.citation}</Text>
+                  </View>
+                )}
                 <Text
                   style={[
                     styles.bubbleText,
@@ -230,6 +276,12 @@ export default function ChatScreen() {
                 >
                   {item.content}
                 </Text>
+                {!!item.note && (
+                  <View style={styles.noteBox}>
+                    <Ionicons name="information-circle-outline" size={13} color={colors.textSecondary} />
+                    <Text style={styles.noteText}>{item.note}</Text>
+                  </View>
+                )}
               </Animated.View>
             </View>
 
@@ -254,7 +306,11 @@ export default function ChatScreen() {
 
       {sending && (
         <Container style={styles.typingRow}>
-          <View style={styles.typingDot} />
+          <View style={styles.typingDots}>
+            <TypingDot delay={0} />
+            <TypingDot delay={120} />
+            <TypingDot delay={240} />
+          </View>
           <Text style={styles.typingText}>LexUg is thinking</Text>
         </Container>
       )}
@@ -422,6 +478,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
+  bubbleAssistantWide: {
+    maxWidth: "92%",
+  },
   bubbleUser: {
     backgroundColor: colors.navy,
   },
@@ -442,12 +501,42 @@ const styles = StyleSheet.create({
   bubbleText: {
     ...type.bodyRegular,
     color: colors.textPrimary,
+    lineHeight: 22,
   },
   bubbleTextUser: {
     color: colors.white,
   },
   bubbleTextError: {
     color: colors.error,
+  },
+  citationHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: spacing.sm,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  citationText: {
+    ...type.label,
+    color: colors.accent,
+    flexShrink: 1,
+  },
+  noteBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 6,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  noteText: {
+    ...type.caption,
+    color: colors.textSecondary,
+    flex: 1,
+    lineHeight: 17,
   },
   sourcesBlock: {
     paddingHorizontal: spacing.xl,
@@ -486,6 +575,10 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     paddingHorizontal: spacing.xl,
     paddingBottom: spacing.sm,
+  },
+  typingDots: {
+    flexDirection: "row",
+    gap: 4,
   },
   typingDot: {
     width: 6,

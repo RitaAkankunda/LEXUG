@@ -16,6 +16,8 @@ export const colors = {
   borderOnNavy: "#3D5170",
   error: "#B3261E",
   errorSoft: "#FBEAE9",
+  success: "#1E7A3E",
+  successSoft: "#E8F5EA",
   white: "#FFFFFF",
 } as const;
 

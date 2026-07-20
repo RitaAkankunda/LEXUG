@@ -29,6 +29,10 @@ export type ChatAnswer = {
   model?: string;
   source?: string;
   sources: ChatSource[];
+  isDemo?: boolean;
+  citation?: string | null;
+  body?: string | null;
+  note?: string | null;
 };
 
 function getApiUrl() {

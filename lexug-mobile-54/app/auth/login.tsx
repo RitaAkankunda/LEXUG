@@ -17,10 +17,12 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Container } from "@/components/ui/Container";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
+  const { showToast } = useToast();
   const params = useLocalSearchParams<{ email?: string; justSignedUp?: string }>();
   const justSignedUp = params.justSignedUp === "1";
   const [email, setEmail] = useState(params.email ?? "");
@@ -43,9 +45,11 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email, password);
+      showToast("Logged in successfully", "success");
       router.replace("/chat");
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "Failed to log in");
+      showToast("Login failed", "error");
     } finally {
       setLoading(false);
     }

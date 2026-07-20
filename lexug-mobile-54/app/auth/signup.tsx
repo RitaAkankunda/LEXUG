@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Container } from "@/components/ui/Container";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 type Errors = {
   name?: string;
@@ -28,6 +29,7 @@ type Errors = {
 export default function SignupScreen() {
   const insets = useSafeAreaInsets();
   const { signup } = useAuth();
+  const { showToast } = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,12 +54,14 @@ export default function SignupScreen() {
     setLoading(true);
     try {
       await signup(email, password, name.trim());
+      showToast("Account created successfully", "success");
       router.replace({
         pathname: "/auth/login",
         params: { email, justSignedUp: "1" },
       });
     } catch (error) {
       setServerError(error instanceof Error ? error.message : "Failed to create account");
+      showToast("Sign up failed", "error");
     } finally {
       setLoading(false);
     }

@@ -49,6 +49,15 @@ function formatCitation(s) {
   return `${s.act}, ${citationUnit(s.act)} ${s.section} (${s.title})`;
 }
 
+// Source text is one dense paragraph with inline "(1) ... (2) ... (3)"
+// clause markers. Splitting on a sentence boundary immediately before each
+// top-level "(N)" marker (not sub-clause letters like "(a)") turns it into
+// a readable list without altering a single word of the actual law text.
+function formatLawText(text) {
+  const parts = text.split(/(?<=[.;])\s+(?=\(\d+\)\s)/);
+  return parts.length > 1 ? parts.map((p) => p.trim()).join('\n\n') : text;
+}
+
 function buildGroundedSystemPrompt(sections) {
   if (sections.length === 0) {
     return [
@@ -157,21 +166,25 @@ async function getChatAnswer(messages) {
     // read. This is real legal text, unedited, not a plain-language
     // explanation of it (that needs the LLM path), so say so.
     const top = sections[0];
-    const text = top
-      ? [
-          `${formatCitation(top)}`,
-          '',
-          top.text,
-          '',
-          '(Demo mode: this is the exact text of the closest matching law, not a plain-language explanation. Configure an AI key for a full answer. This is not legal advice - consult a qualified Ugandan lawyer for your specific situation.)',
-        ].join('\n')
+    const citation = top ? formatCitation(top) : null;
+    const body = top ? formatLawText(top.text) : null;
+    const note = top
+      ? 'Demo mode: this is the exact text of the closest matching law, not a plain-language explanation. This is not legal advice - consult a qualified Ugandan lawyer for your specific situation.'
       : 'No matching section of Ugandan law was found for this question. (Demo mode: no AI key configured.)';
+
+    // content/text stays as a single flat string too, so any client that
+    // hasn't adopted the structured fields yet still renders something sane.
+    const text = [citation, citation && '', body, body && '', note].filter((line) => line !== null).join('\n');
 
     return {
       content: [{ type: 'text', text }],
       model: 'lexug-demo',
       source: 'demo',
       sources: top ? [top].map(({ act, section, title, sourceUrl }) => ({ act, section, title, sourceUrl })) : [],
+      isDemo: true,
+      citation,
+      body,
+      note,
     };
   }
 
@@ -185,6 +198,10 @@ async function getChatAnswer(messages) {
     model,
     source: PROVIDER,
     sources: citedSections.map(({ act, section, title, sourceUrl }) => ({ act, section, title, sourceUrl })),
+    isDemo: false,
+    citation: null,
+    body: null,
+    note: null,
   };
 }
 
