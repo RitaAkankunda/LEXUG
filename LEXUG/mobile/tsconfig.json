@@ -5,13 +5,17 @@
       "es2020"
     ],
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "strict": true,
     "target": "es2020",
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "react",
+      "react-native"
+    ]
   },
   "include": [
     "./**/*.ts",

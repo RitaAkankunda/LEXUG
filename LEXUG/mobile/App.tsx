@@ -4,15 +4,27 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { RootNavigator } from './navigation/RootNavigator';
 
 export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+}
+
+function AppContent() {
+  const { colors, isDark } = useTheme();
+  const styles = React.useMemo(() => createStyles(colors.background), [colors.background]);
+
   const app = (
     <SafeAreaProvider>
       <AuthProvider>
         <RootNavigator />
       </AuthProvider>
-      <StatusBar style="dark" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
     </SafeAreaProvider>
   );
 
@@ -25,10 +37,11 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (backgroundColor: string) =>
+  StyleSheet.create({
   webShell: {
     alignSelf: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor,
     flex: 1,
     maxWidth: 430,
     width: '100%',

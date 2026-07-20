@@ -11,10 +11,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { AppColors, radii, shadows } from '../theme';
 
 export default function SignupScreen({ navigation }: any) {
   const { signUp } = useContext(AuthContext);
+  const { colors, isDark, toggleTheme } = useTheme();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -77,28 +82,56 @@ export default function SignupScreen({ navigation }: any) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.brandBadge}>
-          <Text style={styles.brandBadgeText}>LexUg</Text>
+        <View style={styles.topActions}>
+          <TouchableOpacity
+            style={styles.circleButton}
+            onPress={() => navigation.navigate('Login')}
+            disabled={loading}
+            accessibilityLabel="Back to login"
+          >
+            <Ionicons name="arrow-back" size={20} color={colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.circleButton}
+            onPress={() => {
+              void toggleTheme();
+            }}
+            accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <Ionicons
+              name={isDark ? 'sunny-outline' : 'moon-outline'}
+              size={21}
+              color={colors.primary}
+            />
+          </TouchableOpacity>
         </View>
 
+        <View style={styles.brandMark}>
+          <Ionicons name="shield-checkmark-outline" size={27} color={colors.gold} />
+        </View>
         <Text style={styles.title}>Create your account</Text>
-        <Text style={styles.subtitle}>Save chats, reopen history, and keep your civic rights questions together.</Text>
+        <Text style={styles.subtitle}>
+          Save chats, reopen history, and keep your civic rights questions together.
+        </Text>
 
         <View style={styles.form}>
-          <Text style={styles.label}>Full name</Text>
-          <TextInput
-            style={styles.input}
+          <Field
+            colors={colors}
+            styles={styles}
+            icon="person-outline"
+            label="Full name"
             placeholder="Akankunda Rita"
             value={displayName}
             onChangeText={setDisplayName}
             editable={!loading}
-            returnKeyType="next"
             textContentType="name"
           />
 
-          <Text style={styles.label}>Email address</Text>
-          <TextInput
-            style={styles.input}
+          <Field
+            colors={colors}
+            styles={styles}
+            icon="mail-outline"
+            label="Email address"
             placeholder="you@example.com"
             value={email}
             onChangeText={setEmail}
@@ -109,61 +142,54 @@ export default function SignupScreen({ navigation }: any) {
             textContentType="emailAddress"
           />
 
-          <Text style={styles.label}>Password</Text>
-          <View style={styles.passwordInputWrap}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="At least 6 characters"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              editable={!loading}
-              textContentType="newPassword"
-            />
-            <TouchableOpacity
-              style={styles.visibilityButton}
-              onPress={() => setShowPassword((current) => !current)}
-              disabled={loading}
-              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-            >
-              <Text style={styles.visibilityIcon}>{showPassword ? '◉' : '◎'}</Text>
-            </TouchableOpacity>
-          </View>
+          <PasswordField
+            colors={colors}
+            styles={styles}
+            label="Password"
+            placeholder="At least 6 characters"
+            value={password}
+            onChangeText={setPassword}
+            visible={showPassword}
+            onToggle={() => setShowPassword((current) => !current)}
+            editable={!loading}
+            accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+          />
 
-          <Text style={styles.label}>Confirm password</Text>
-          <View style={styles.passwordInputWrap}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Re-enter your password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry={!showConfirmPassword}
-              editable={!loading}
-              textContentType="newPassword"
-            />
-            <TouchableOpacity
-              style={styles.visibilityButton}
-              onPress={() => setShowConfirmPassword((current) => !current)}
-              disabled={loading}
-              accessibilityLabel={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-            >
-              <Text style={styles.visibilityIcon}>{showConfirmPassword ? '◉' : '◎'}</Text>
-            </TouchableOpacity>
-          </View>
+          <PasswordField
+            colors={colors}
+            styles={styles}
+            label="Confirm password"
+            placeholder="Re-enter your password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            visible={showConfirmPassword}
+            onToggle={() => setShowConfirmPassword((current) => !current)}
+            editable={!loading}
+            accessibilityLabel={
+              showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'
+            }
+          />
 
-          <Text style={styles.helperText}>
-            After signup, you will log in once to start your secure session.
-          </Text>
+          <View style={styles.helperBox}>
+            <Ionicons name="lock-closed-outline" size={16} color={colors.green} />
+            <Text style={styles.helperText}>
+              After signup, you will log in once to start your secure session.
+            </Text>
+          </View>
 
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleSignup}
             disabled={loading}
+            activeOpacity={0.85}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.surface} />
             ) : (
-              <Text style={styles.buttonText}>Create Account</Text>
+              <>
+                <Text style={styles.buttonText}>Create Account</Text>
+                <Ionicons name="checkmark" size={19} color={colors.surface} />
+              </>
             )}
           </TouchableOpacity>
         </View>
@@ -176,116 +202,218 @@ export default function SignupScreen({ navigation }: any) {
   );
 }
 
-const styles = StyleSheet.create({
+type FieldProps = React.ComponentProps<typeof TextInput> & {
+  colors: AppColors;
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  styles: SignupStyles;
+};
+
+function Field({ colors, icon, label, style, styles, ...inputProps }: FieldProps) {
+  return (
+    <>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.inputWrap}>
+        <Ionicons name={icon} size={19} color={colors.textMuted} />
+        <TextInput
+          {...inputProps}
+          style={[styles.input, style]}
+          placeholderTextColor={colors.textMuted}
+        />
+      </View>
+    </>
+  );
+}
+
+type PasswordFieldProps = {
+  colors: AppColors;
+  label: string;
+  placeholder: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  visible: boolean;
+  onToggle: () => void;
+  editable: boolean;
+  accessibilityLabel: string;
+  styles: SignupStyles;
+};
+
+function PasswordField({
+  colors,
+  label,
+  placeholder,
+  value,
+  onChangeText,
+  visible,
+  onToggle,
+  editable,
+  accessibilityLabel,
+  styles,
+}: PasswordFieldProps) {
+  return (
+    <>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.inputWrap}>
+        <Ionicons name="lock-closed-outline" size={19} color={colors.textMuted} />
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor={colors.textMuted}
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={!visible}
+          editable={editable}
+          textContentType="newPassword"
+        />
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={onToggle}
+          disabled={!editable}
+          accessibilityLabel={accessibilityLabel}
+        >
+          <Ionicons
+            name={visible ? 'eye-off-outline' : 'eye-outline'}
+            size={20}
+            color={colors.primary}
+          />
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+}
+
+type SignupStyles = ReturnType<typeof createStyles>;
+
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   content: {
     flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
   },
-  brandBadge: {
-    alignSelf: 'center',
-    backgroundColor: '#111',
-    borderRadius: 8,
-    marginBottom: 18,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+  topActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
-  brandBadgeText: {
-    color: '#FCDC4D',
-    fontSize: 14,
-    fontWeight: '800',
+  circleButton: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    height: 42,
+    justifyContent: 'center',
+    width: 42,
+    ...shadows.sm,
+  },
+  brandMark: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: colors.ink,
+    borderRadius: radii.lg,
+    height: 56,
+    justifyContent: 'center',
+    marginBottom: 18,
+    width: 56,
   },
   title: {
-    color: '#111',
-    fontSize: 28,
-    fontWeight: 'bold',
+    color: colors.text,
+    fontSize: 30,
+    fontWeight: '900',
+    lineHeight: 36,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    color: '#666',
+    color: colors.textMuted,
     fontSize: 15,
-    lineHeight: 21,
-    marginBottom: 28,
+    lineHeight: 22,
+    marginBottom: 24,
     textAlign: 'center',
   },
   form: {
-    backgroundColor: '#fff',
-    borderColor: '#ddd',
-    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
     borderWidth: 1,
     padding: 16,
+    ...shadows.sm,
   },
   label: {
-    color: '#333',
+    color: colors.text,
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
     marginBottom: 8,
   },
-  input: {
-    backgroundColor: '#fafafa',
-    borderColor: '#ddd',
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 15,
-    marginBottom: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  passwordInputWrap: {
+  inputWrap: {
     alignItems: 'center',
-    backgroundColor: '#fafafa',
-    borderColor: '#ddd',
-    borderRadius: 8,
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.border,
+    borderRadius: radii.md,
     borderWidth: 1,
     flexDirection: 'row',
     marginBottom: 16,
+    minHeight: 50,
+    paddingHorizontal: 12,
   },
-  passwordInput: {
+  input: {
+    color: colors.text,
     flex: 1,
     fontSize: 15,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 12,
   },
-  visibilityButton: {
+  iconButton: {
     alignItems: 'center',
     height: 44,
     justifyContent: 'center',
-    width: 48,
+    width: 36,
   },
-  visibilityIcon: {
-    color: '#D21034',
-    fontSize: 20,
-    fontWeight: '700',
+  helperBox: {
+    alignItems: 'flex-start',
+    backgroundColor: colors.successSurface,
+    borderColor: colors.successBorder,
+    borderRadius: radii.sm,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginBottom: 4,
+    padding: 11,
   },
   helperText: {
-    color: '#777',
+    color: colors.green,
+    flex: 1,
     fontSize: 12,
+    fontWeight: '700',
     lineHeight: 17,
-    marginBottom: 4,
+    marginLeft: 8,
   },
   button: {
     alignItems: 'center',
-    backgroundColor: '#D21034',
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    borderRadius: radii.md,
+    flexDirection: 'row',
+    height: 50,
+    justifyContent: 'center',
     marginTop: 14,
-    padding: 14,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.65,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.surface,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '900',
+    marginRight: 8,
   },
   link: {
-    color: '#D21034',
-    fontWeight: '600',
+    color: colors.text,
+    fontWeight: '800',
     marginTop: 18,
     textAlign: 'center',
   },

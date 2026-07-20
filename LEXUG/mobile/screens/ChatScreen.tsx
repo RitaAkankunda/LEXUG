@@ -10,19 +10,47 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { ChatMessage, chatService } from '../services/api';
+import { AppColors, radii, shadows } from '../theme';
 
 const SYSTEM_PROMPT = `You are LexUg, a helpful AI assistant specializing in Ugandan law and civic rights.
 You provide clear, accurate information about Ugandan laws, constitutional rights, and civic processes.
 Keep responses concise and practical, especially focused on rights awareness for Ugandan citizens.
 Always remind users that this is civic education only and not legal advice.`;
 
-const QUICK_CARDS = [
-  { label: 'Police', text: 'What are my rights if I am arrested by police?' },
-  { label: 'Land', text: 'Can my landlord evict me without notice?' },
-  { label: 'Vote', text: "How do Uganda's elections work?" },
-  { label: 'Work', text: 'What are my rights as a worker in Uganda?' },
+const QUICK_CARDS: Array<{
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  text: string;
+  accent: keyof AppColors;
+}> = [
+  {
+    label: 'Police rights',
+    icon: 'shield-checkmark-outline',
+    text: 'What are my rights if I am arrested by police?',
+    accent: 'primary',
+  },
+  {
+    label: 'Landlord notice',
+    icon: 'home-outline',
+    text: 'Can my landlord evict me without notice?',
+    accent: 'green',
+  },
+  {
+    label: 'Voting',
+    icon: 'checkbox-outline',
+    text: "How do Uganda's elections work?",
+    accent: 'gold',
+  },
+  {
+    label: 'Work rights',
+    icon: 'briefcase-outline',
+    text: 'What are my rights as a worker in Uganda?',
+    accent: 'ink',
+  },
 ];
 
 function createConversationId() {
@@ -37,6 +65,8 @@ type ChatScreenParams = {
 
 export default function ChatScreen({ route }: { route?: { params?: ChatScreenParams } }) {
   const { state } = useContext(AuthContext);
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -104,30 +134,52 @@ export default function ChatScreen({ route }: { route?: { params?: ChatScreenPar
     }
   };
 
+  const canSend = input.trim().length > 0 && !loading;
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={90}
+      keyboardVerticalOffset={88}
     >
-      <ScrollView style={styles.messagesContainer} contentContainerStyle={styles.messagesContent}>
+      <ScrollView
+        style={styles.messagesContainer}
+        contentContainerStyle={styles.messagesContent}
+        keyboardShouldPersistTaps="handled"
+      >
         {messages.length === 0 ? (
           <View style={styles.emptyState}>
-            <Text style={styles.title}>LexUg</Text>
-            <Text style={styles.subtitle}>Ask about your legal rights in Uganda</Text>
-            <Text style={styles.notice}>
-              Civic education only. For legal advice, speak with a qualified lawyer.
+            <View style={styles.brandMark}>
+              <Ionicons name="shield-checkmark-outline" size={28} color={colors.gold} />
+            </View>
+            <Text style={styles.title}>Know your rights, fast</Text>
+            <Text style={styles.subtitle}>
+              Ask practical questions about Ugandan law, civic duties, and everyday legal processes.
             </Text>
 
-            <Text style={styles.quickCardsTitle}>Quick Questions</Text>
+            <View style={styles.notice}>
+              <Ionicons name="alert-circle-outline" size={18} color={colors.primaryDark} />
+              <Text style={styles.noticeText}>
+                Civic education only. For legal advice, speak with a qualified lawyer.
+              </Text>
+            </View>
+
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Start with a common question</Text>
+              <Text style={styles.sectionHint}>Tap to ask</Text>
+            </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {QUICK_CARDS.map((card) => (
                 <TouchableOpacity
                   key={card.label}
                   style={styles.quickCard}
                   onPress={() => handleSendMessage(card.text)}
+                  activeOpacity={0.82}
                 >
-                  <Text style={styles.cardIcon}>{card.label}</Text>
+                  <View style={[styles.quickIconWrap, { backgroundColor: colors[card.accent] }]}>
+                    <Ionicons name={card.icon} size={20} color={colors.surface} />
+                  </View>
+                  <Text style={styles.cardLabel}>{card.label}</Text>
                   <Text style={styles.cardText}>{card.text}</Text>
                 </TouchableOpacity>
               ))}
@@ -136,32 +188,46 @@ export default function ChatScreen({ route }: { route?: { params?: ChatScreenPar
         ) : (
           <View>
             <View style={styles.chatHeader}>
-              <Text style={styles.chatHeaderText}>
-                {state.isGuest ? 'Guest chat' : 'Saved chat'}
-              </Text>
+              <View>
+                <Text style={styles.chatHeaderTitle}>
+                  {state.isGuest ? 'Guest conversation' : 'Saved conversation'}
+                </Text>
+                <Text style={styles.chatHeaderMeta}>{messages.length} messages</Text>
+              </View>
               <TouchableOpacity style={styles.newChatButton} onPress={handleNewChat}>
+                <Ionicons name="add" size={18} color={colors.primary} />
                 <Text style={styles.newChatButtonText}>New</Text>
               </TouchableOpacity>
             </View>
-            {messages.map((msg, index) => (
-              <View
-                key={`${msg.role}-${index}`}
-                style={[
-                  styles.message,
-                  msg.role === 'user' ? styles.userMessage : styles.assistantMessage,
-                ]}
-              >
-                <Text style={msg.role === 'user' ? styles.userText : styles.assistantText}>
-                  {msg.content}
-                </Text>
-              </View>
-            ))}
+
+            {messages.map((msg, index) => {
+              const isUser = msg.role === 'user';
+
+              return (
+                <View
+                  key={`${msg.role}-${index}`}
+                  style={[
+                    styles.message,
+                    isUser ? styles.userMessage : styles.assistantMessage,
+                  ]}
+                >
+                  {!isUser && (
+                    <View style={styles.messageLabelRow}>
+                      <Ionicons name="book-outline" size={14} color={colors.green} />
+                      <Text style={styles.messageLabel}>LexUg</Text>
+                    </View>
+                  )}
+                  <Text style={isUser ? styles.userText : styles.assistantText}>{msg.content}</Text>
+                </View>
+              );
+            })}
           </View>
         )}
 
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#D21034" />
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={styles.loadingText}>Checking the law corpus...</Text>
           </View>
         )}
       </ScrollView>
@@ -170,6 +236,7 @@ export default function ChatScreen({ route }: { route?: { params?: ChatScreenPar
         <TextInput
           style={styles.input}
           placeholder="Ask about your rights..."
+          placeholderTextColor={colors.textMuted}
           value={input}
           onChangeText={setInput}
           multiline
@@ -177,21 +244,23 @@ export default function ChatScreen({ route }: { route?: { params?: ChatScreenPar
           editable={!loading}
         />
         <TouchableOpacity
-          style={[styles.sendButton, (loading || !input.trim()) && styles.buttonDisabled]}
+          style={[styles.sendButton, !canSend && styles.buttonDisabled]}
           onPress={() => handleSendMessage()}
-          disabled={loading || !input.trim()}
+          disabled={!canSend}
+          accessibilityLabel="Send message"
         >
-          <Text style={styles.sendButtonText}>Send</Text>
+          <Ionicons name="send" size={19} color={colors.surface} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   messagesContainer: {
     flex: 1,
@@ -199,149 +268,229 @@ const styles = StyleSheet.create({
   messagesContent: {
     flexGrow: 1,
     padding: 16,
+    paddingBottom: 20,
   },
   emptyState: {
     flex: 1,
     justifyContent: 'center',
+  },
+  brandMark: {
     alignItems: 'center',
+    backgroundColor: colors.ink,
+    borderRadius: radii.lg,
+    height: 58,
+    justifyContent: 'center',
+    marginBottom: 18,
+    width: 58,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    color: colors.text,
+    fontSize: 30,
+    fontWeight: '900',
+    lineHeight: 36,
+    marginBottom: 10,
   },
   subtitle: {
+    color: colors.textMuted,
     fontSize: 16,
-    color: '#666',
-    marginBottom: 12,
-    textAlign: 'center',
+    lineHeight: 23,
+    marginBottom: 18,
+    maxWidth: 350,
   },
   notice: {
-    backgroundColor: '#fff8e1',
-    borderColor: '#f4d27a',
-    borderRadius: 8,
+    alignItems: 'flex-start',
+    backgroundColor: colors.warningSurface,
+    borderColor: colors.warningBorder,
+    borderRadius: radii.sm,
     borderWidth: 1,
-    color: '#5f4a12',
-    fontSize: 12,
-    lineHeight: 17,
+    flexDirection: 'row',
     marginBottom: 24,
-    maxWidth: 320,
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    textAlign: 'center',
+    paddingVertical: 11,
   },
-  quickCardsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 12,
-    color: '#333',
+  noticeText: {
+    color: colors.primaryDark,
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 17,
+    marginLeft: 8,
   },
-  chatHeader: {
+  sectionHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 12,
   },
-  chatHeaderText: {
-    color: '#777',
-    fontSize: 12,
-    fontWeight: '600',
+  sectionTitle: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '800',
   },
-  newChatButton: {
-    backgroundColor: '#fff',
-    borderColor: '#D21034',
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  newChatButtonText: {
-    color: '#D21034',
+  sectionHint: {
+    color: colors.textMuted,
     fontSize: 12,
     fontWeight: '700',
   },
   quickCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginRight: 12,
-    width: 150,
-    minHeight: 118,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radii.md,
     borderWidth: 1,
-    borderColor: '#ddd',
+    marginRight: 12,
+    minHeight: 150,
+    padding: 14,
+    width: 174,
+    ...shadows.sm,
   },
-  cardIcon: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#D21034',
-    marginBottom: 8,
+  quickIconWrap: {
+    alignItems: 'center',
+    borderRadius: radii.sm,
+    height: 38,
+    justifyContent: 'center',
+    marginBottom: 12,
+    width: 38,
+  },
+  cardLabel: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 6,
   },
   cardText: {
+    color: colors.textMuted,
     fontSize: 12,
-    color: '#333',
-    fontWeight: '500',
+    lineHeight: 17,
+  },
+  chatHeader: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+    padding: 12,
+  },
+  chatHeaderTitle: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  chatHeaderMeta: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  newChatButton: {
+    alignItems: 'center',
+    backgroundColor: colors.primarySurface,
+    borderColor: colors.primary,
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  newChatButtonText: {
+    color: colors.primary,
+    fontSize: 12,
+    fontWeight: '800',
+    marginLeft: 4,
   },
   message: {
+    borderRadius: radii.md,
     marginBottom: 12,
-    borderRadius: 8,
-    padding: 12,
-    maxWidth: '85%',
+    maxWidth: '88%',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#D21034',
+    backgroundColor: colors.primary,
+    borderTopRightRadius: 4,
   },
   assistantMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderTopLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#ddd',
+  },
+  messageLabelRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginBottom: 7,
+  },
+  messageLabel: {
+    color: colors.green,
+    fontSize: 11,
+    fontWeight: '900',
+    marginLeft: 5,
+    textTransform: 'uppercase',
   },
   userText: {
-    color: '#fff',
+    color: colors.surface,
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 21,
   },
   assistantText: {
-    color: '#333',
+    color: colors.text,
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 21,
   },
   loadingContainer: {
     alignItems: 'center',
-    padding: 20,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginTop: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  loadingText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '700',
+    marginLeft: 8,
   },
   inputContainer: {
+    alignItems: 'flex-end',
+    backgroundColor: colors.surface,
+    borderTopColor: colors.border,
+    borderTopWidth: 1,
     flexDirection: 'row',
     padding: 12,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
   },
   input: {
-    flex: 1,
+    backgroundColor: colors.surfaceMuted,
+    borderColor: colors.border,
+    borderRadius: radii.lg,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginRight: 8,
-    maxHeight: 100,
+    color: colors.text,
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 20,
+    marginRight: 10,
+    maxHeight: 112,
+    minHeight: 46,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
   },
   sendButton: {
-    backgroundColor: '#D21034',
-    borderRadius: 20,
-    minWidth: 56,
-    height: 44,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 12,
-  },
-  sendButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    backgroundColor: colors.primary,
+    borderRadius: radii.pill,
+    height: 46,
+    justifyContent: 'center',
+    width: 46,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    backgroundColor: colors.primarySurface,
   },
 });

@@ -8,8 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { ChatMessage, chatService } from '../services/api';
+import { AppColors, radii, shadows } from '../theme';
 
 type ChatHistoryItem = {
   id: string;
@@ -49,8 +52,18 @@ function isChatHistoryItem(value: unknown): value is Omit<ChatHistoryItem, 'id' 
   );
 }
 
+function formatDate(timestamp: string) {
+  return new Date(timestamp).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export default function HistoryScreen({ navigation }: any) {
   const { state } = useContext(AuthContext);
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const [chats, setChats] = useState<ChatHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [openingId, setOpeningId] = useState<string | null>(null);
@@ -78,9 +91,7 @@ export default function HistoryScreen({ navigation }: any) {
           ...chat,
           messages: normalizeMessages(chat.messages),
         }))
-        .sort(
-          (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        );
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       setChats(chatList);
     } catch (error) {
@@ -150,20 +161,26 @@ export default function HistoryScreen({ navigation }: any) {
       style={styles.chatItem}
       onPress={() => handleOpen(item)}
       disabled={openingId === item.id}
+      activeOpacity={0.84}
     >
+      <View style={styles.chatIcon}>
+        <Ionicons name="document-text-outline" size={20} color={colors.primary} />
+      </View>
       <View style={styles.chatContent}>
         <Text style={styles.question} numberOfLines={2}>
-          Q: {item.question}
+          {item.question}
         </Text>
-        <Text style={styles.timestamp}>
-          {new Date(item.timestamp).toLocaleDateString()}
-        </Text>
+        <Text style={styles.timestamp}>{formatDate(item.timestamp)}</Text>
       </View>
-      <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item.id)}
+        accessibilityLabel="Delete conversation"
+      >
         {openingId === item.id ? (
-          <ActivityIndicator size="small" color="#D21034" />
+          <ActivityIndicator size="small" color={colors.primary} />
         ) : (
-          <Text style={styles.deleteText}>X</Text>
+          <Ionicons name="trash-outline" size={18} color={colors.danger} />
         )}
       </TouchableOpacity>
     </TouchableOpacity>
@@ -171,105 +188,180 @@ export default function HistoryScreen({ navigation }: any) {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#D21034" />
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Chat History</Text>
+      <View style={styles.headerBlock}>
+        <Text style={styles.title}>Saved chats</Text>
+        <Text style={styles.subtitle}>
+          {state.isGuest ? 'Sign in to keep your research.' : `${chats.length} conversations`}
+        </Text>
+      </View>
 
       {state.isGuest ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>Guest history is off</Text>
-          <Text style={styles.emptyText}>Sign in to save and reopen conversations.</Text>
-        </View>
+        <EmptyState
+          colors={colors}
+          icon="lock-closed-outline"
+          styles={styles}
+          title="Guest history is off"
+          text="Sign in to save and reopen conversations."
+        />
       ) : chats.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>No conversations yet</Text>
-          <Text style={styles.emptyText}>Your saved chats will appear here.</Text>
-        </View>
+        <EmptyState
+          colors={colors}
+          icon="chatbubble-ellipses-outline"
+          styles={styles}
+          title="No conversations yet"
+          text="Your saved chats will appear here after you ask a question."
+        />
       ) : (
         <FlatList
           data={chats}
           renderItem={renderChat}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+function EmptyState({
+  colors,
+  icon,
+  styles,
+  title,
+  text,
+}: {
+  colors: AppColors;
+  icon: keyof typeof Ionicons.glyphMap;
+  styles: HistoryStyles;
+  title: string;
+  text: string;
+}) {
+  return (
+    <View style={styles.emptyState}>
+      <View style={styles.emptyIcon}>
+        <Ionicons name={icon} size={26} color={colors.primary} />
+      </View>
+      <Text style={styles.emptyTitle}>{title}</Text>
+      <Text style={styles.emptyText}>{text}</Text>
+    </View>
+  );
+}
+
+type HistoryStyles = ReturnType<typeof createStyles>;
+
+const createStyles = (colors: AppColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
+    backgroundColor: colors.background,
+    paddingHorizontal: 16,
+  },
+  centerContainer: {
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  headerBlock: {
+    paddingBottom: 14,
+    paddingTop: 18,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    marginTop: 8,
+    color: colors.text,
+    fontSize: 26,
+    fontWeight: '900',
+    lineHeight: 32,
+  },
+  subtitle: {
+    color: colors.textMuted,
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 4,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 22,
   },
   chatItem: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    marginBottom: 12,
+    padding: 12,
+    ...shadows.sm,
+  },
+  chatIcon: {
+    alignItems: 'center',
+    backgroundColor: colors.primarySurface,
+    borderRadius: radii.sm,
+    height: 42,
+    justifyContent: 'center',
+    marginRight: 12,
+    width: 42,
   },
   chatContent: {
     flex: 1,
-    marginRight: 12,
+    marginRight: 10,
   },
   question: {
+    color: colors.text,
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
+    fontWeight: '800',
+    lineHeight: 20,
+    marginBottom: 5,
   },
   timestamp: {
+    color: colors.textMuted,
     fontSize: 12,
-    color: '#777',
+    fontWeight: '700',
   },
   deleteButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#ffebee',
-    justifyContent: 'center',
     alignItems: 'center',
-  },
-  deleteText: {
-    color: '#D21034',
-    fontSize: 14,
-    fontWeight: 'bold',
+    backgroundColor: colors.dangerSurface,
+    borderRadius: radii.pill,
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
   },
   emptyState: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  emptyIcon: {
     alignItems: 'center',
+    backgroundColor: colors.primarySurface,
+    borderColor: colors.primary,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    height: 62,
+    justifyContent: 'center',
+    marginBottom: 16,
+    width: 62,
   },
   emptyTitle: {
-    color: '#333',
-    fontSize: 18,
-    fontWeight: '700',
+    color: colors.text,
+    fontSize: 19,
+    fontWeight: '900',
     marginBottom: 8,
+    textAlign: 'center',
   },
   emptyText: {
+    color: colors.textMuted,
     fontSize: 14,
-    color: '#777',
+    lineHeight: 20,
     textAlign: 'center',
   },
 });

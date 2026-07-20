@@ -9,6 +9,10 @@ type AuthResponse = {
   token: string;
 };
 
+type ExpoConfigWithHost = {
+  hostUri?: string;
+};
+
 export type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
@@ -21,7 +25,7 @@ function getApiUrl() {
     return configuredUrl;
   }
 
-  const hostUri = Constants.expoConfig?.hostUri;
+  const hostUri = (Constants.expoConfig as ExpoConfigWithHost | undefined)?.hostUri;
   const host = hostUri?.split(':')[0];
 
   if (host) {
